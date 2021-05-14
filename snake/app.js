@@ -1,17 +1,10 @@
-/* CLEAN UP CODE TO REDUCE REPETITION
-RENAME SOME OF THE FUNCTIONS
-MOVE THEM AROUND 
-ADD A START GAME FUNCTION
-RESET BUTTON
-APPLE COUNTER*/
-
 let snake = [188, 189]
 let direction = 'left'
 let appleGrid = []
 
 function makeGrid() {
     for (let i = 0; i < 400; i++) {
-        $('.grid').append(`<div class="tile" id=${i}></div>`)  //`<div class="tile" id=${i}></div>` debugging snake movement
+        $('.grid').append(`<div class="tile" id=${i}></div>`)  //`<div class="tile" id=${i}>${i}</div>` debugging snake movement
     } 
 }
 
@@ -68,7 +61,7 @@ let move = setInterval(moveSnake, 250);
 
 function collisionCheck() {
     //wall collision check
-    console.log('head', snake[0]) //need to clean up snake head popping through for horizontals(also doesnt work sometimes)
+    console.log('head', snake[0]) 
     if ( 
         direction === 'left' && (snake[0] % 20 === 19) || 
         direction === 'up' && (snake[0] < 0) || 
@@ -77,7 +70,7 @@ function collisionCheck() {
     ) { 
         console.log('hit a wall')
         clearInterval(move);
-        clearInterval(check) //check if hoisting this is bad practice
+        clearInterval(check) 
     }
 }
 
@@ -95,7 +88,7 @@ function snakeCollision() {
 }
 
 let check = setInterval(collisionCheck, 500);
-let snackey = setInterval(snakeCollision, 500); //snake collision rename later
+let snackey = setInterval(snakeCollision, 500); 
 
 function randomNumber(max) {
     return Math.floor(Math.random() * max)
@@ -111,4 +104,4 @@ function addApple() {
     }
 }
 
-setInterval(addApple, 2000); // clear interval when snek dies
+setInterval(addApple, 2000); 

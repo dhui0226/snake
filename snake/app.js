@@ -1,14 +1,14 @@
-let snake = [188, 189]
+let snake = [188, 189, 190, 191]
 let direction = 'left'
 let appleGrid = []
+let score = 0
+let gameOver = false
 
 function makeGrid() {
     for (let i = 0; i < 400; i++) {
         $('.grid').append(`<div class="tile" id=${i}></div>`)  //`<div class="tile" id=${i}>${i}</div>` debugging snake movement
     } 
 }
-
-makeGrid();
 
 $(document).keydown(function(event) {
     if (event.which === 37 && direction !== 'right') {
@@ -25,7 +25,6 @@ $(document).keydown(function(event) {
 function snakeBody() {
     snakePositions = snake.forEach(function(tile) {
         let grid = $('.grid div')
-        console.log(tile)
         grid[tile].classList.add('snake')
     })
 }
@@ -43,12 +42,18 @@ function moveSnake() {
         snakeHead += 20
     }
 
-    //console.log(direction)
-    snake.unshift(snakeHead)
+    if (!wallCollision(snakeHead)) {
+        snake.unshift(snakeHead)
+    } else {
+        return
+    }
     
-    if (snakeHead === appleGrid[0]) {
+    
+    if (snakeHead === appleGrid[0]) { //eating apple
         $(`#${snakeHead}`).removeClass('apple')
         appleGrid.pop()
+        score += 1
+        $('header').text(`Score: ${score}`)
     } else {
         let tail = snake.pop() 
         $('.grid div')[tail].classList.remove('snake')
@@ -57,20 +62,17 @@ function moveSnake() {
     snakeBody();
 }
 
-let move = setInterval(moveSnake, 250); 
-
-function collisionCheck() {
-    //wall collision check
-    console.log('head', snake[0]) 
+function wallCollision(snakeHead) {
+    //console.log('head', snakeHead)
     if ( 
-        direction === 'left' && (snake[0] % 20 === 19) || 
-        direction === 'up' && (snake[0] < 0) || 
-        direction === 'right' && (snake[0] % 20 === 0) || 
-        direction === 'down' && (snake[0] > 399) 
+        ( direction === 'left' && (snakeHead % 20 === 19) ) || 
+        ( direction === 'up' && (snakeHead < 0) ) || 
+        ( direction === 'right' && (snakeHead % 20 === 0) ) || 
+        ( direction === 'down' && (snakeHead > 399) ) 
     ) { 
         console.log('hit a wall')
-        clearInterval(move);
-        clearInterval(check) 
+        gameOver = true
+        return true
     }
 }
 
@@ -80,15 +82,15 @@ function snakeCollision() {
     snakeSections.forEach(function(part) {
         if (snake[0] === part) {
             console.log('eat', snake)
-            clearInterval(move)
-            clearInterval(check)
-            clearInterval(snackey)
+            gameOver = true
         }
     })
 }
 
-let check = setInterval(collisionCheck, 500);
-let snackey = setInterval(snakeCollision, 500); 
+function collisionCheck() {
+    wallCollision();
+    snakeCollision();
+}
 
 function randomNumber(max) {
     return Math.floor(Math.random() * max)
@@ -104,4 +106,24 @@ function addApple() {
     }
 }
 
-setInterval(addApple, 2000); 
+function startGame() {
+    makeGrid();
+    move = setInterval(moveSnake, 250); 
+    crash = setInterval(collisionCheck, 125);
+    spawnApple = setInterval(addApple, 250); 
+    setInterval(isGameOver, 62.5);
+}
+
+startGame();
+
+function isGameOver() {
+    if (gameOver) {
+        clearInterval(move);
+        clearInterval(crash);
+        clearInterval(spawnApple);
+    }
+}
+
+$('button').click(function() {
+    location.reload();
+})
